@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agam Construction</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg:#0A0E1A;
+    --bg-soft:#111629;
+    --text:#F5F6FA;
+    --muted:#9AA5B8;
+    --amber:#FF8A2B;
+    --amber2:#FFC24B;
+    --teal:#2DD4BF;
+    --card:rgba(255,255,255,0.045);
+    --border:rgba(255,255,255,0.09);
+    --grad: linear-gradient(135deg, var(--amber), var(--amber2));
+  }
+
+  html { scroll-behavior:smooth; }
+
+  body {
+    font-family:'Inter', sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  a { text-decoration:none; color:inherit; }
+  h1,h2,h3 { font-family:'Sora', sans-serif; }
+
+  .reveal {
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  /* NAV */
+  nav {
+    position:sticky;
+    top:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 6%;
+    background:rgba(10,14,26,0.65);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo-mark {
+    width:36px; height:36px;
+    border-radius:10px;
+    background:var(--grad);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    color:#0A0E1A;
+    font-size:18px;
+  }
+  .logo-text {
+    font-family:'Sora', sans-serif;
+    font-weight:700;
+    font-size:18px;
+    letter-spacing:0.3px;
+  }
+  .nav-links { display:flex; gap:32px; font-size:14px; font-weight:500; color:var(--muted); }
+  .nav-links a:hover { color:var(--text); }
+  .nav-cta {
+    background:var(--grad);
+    color:#0A0E1A;
+    font-weight:700;
+    font-size:14px;
+    padding:10px 20px;
+    border-radius:100px;
+  }
+
+  @media (max-width:800px){ .nav-links{ display:none; } }
+
+  /* HERO */
+  .hero {
+    position:relative;
+    padding:110px 6% 140px 6%;
+    display:flex;
+    align-items:center;
+    gap:60px;
+    min-height:640px;
+  }
+  .hero::before {
+    content:"";
+    position:absolute;
+    top:-200px; right:-150px;
+    width:700px; height:700px;
+    background:radial-gradient(circle, rgba(255,138,43,0.25), transparent 65%);
+    filter:blur(10px);
+    z-index:0;
+  }
+  .hero::after {
+    content:"";
+    position:absolute;
+    bottom:-250px; left:-100px;
+    width:500px; height:500px;
+    background:radial-gradient(circle, rgba(45,212,191,0.16), transparent 65%);
+    z-index:0;
+  }
+  .hero-text { flex:1 1 480px; position:relative; z-index:2; }
+  .pill {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:8px 16px;
+    border-radius:100px;
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:26px;
+  }
+  .pill .dot { width:7px; height:7px; border-radius:50%; background:var(--teal); }
+  .hero h1 {
+    font-size:56px;
+    font-weight:800;
+    line-height:1.12;
+    margin-bottom:24px;
+    letter-spacing:-1px;
+  }
+  .hero h1 .grad-text {
+    background:var(--grad);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero p {
+    color:var(--muted);
+    font-size:18px;
+    line-height:1.65;
+    max-width:480px;
+    margin-bottom:36px;
+  }
+  .btn-row { display:flex; gap:16px; flex-wrap:wrap; }
+  .btn-primary {
+    background:var(--grad);
+    color:#0A0E1A;
+    font-weight:700;
+    padding:16px 30px;
+    border-radius:100px;
+    font-size:15px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    box-shadow:0 8px 24px rgba(255,138,43,0.28);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,138,43,0.4); }
+  .btn-ghost {
+    border:1.5px solid var(--border);
+    color:var(--text);
+    font-weight:600;
+    padding:15px 28px;
+    border-radius:100px;
+    font-size:15px;
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .btn-ghost:hover { border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.03); }
+
+  /* HERO VISUAL - floating badges */
+  .hero-visual {
+    flex:1 1 400px;
+    position:relative;
+    height:440px;
+    z-index:2;
+  }
+  .orb {
+    position:absolute;
+    top:50%; left:50%;
+    width:260px; height:260px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:var(--grad);
+    filter:blur(60px);
+    opacity:0.35;
+  }
+  .center-card {
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:200px; height:200px;
+    border-radius:28px;
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:64px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .badge {
+    position:absolute;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,0.07);
+    border:1px solid var(--border);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    padding:11px 18px;
+    border-radius:100px;
+    font-size:13.5px;
+    font-weight:600;
+    font-family:'Inter', sans-serif;
+    color:var(--text);
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,0.3);
+    animation:float 5s ease-in-out infinite;
+    transition:transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .badge:hover { border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.12); transform:translateY(-3px) scale(1.04); }
+  .badge.b1 { top:6%; left:2%; animation-delay:0s; }
+  .badge.b2 { top:16%; right:0%; animation-delay:0.6s; }
+  .badge.b3 { top:52%; left:-6%; animation-delay:1.2s; }
+  .badge.b4 { bottom:18%; right:2%; animation-delay:1.8s; }
+  .badge.b5 { bottom:2%; left:18%; animation-delay:2.4s; }
+  @keyframes float {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-12px); }
+  }
+
+  @media (max-width:800px){
+    .hero { flex-direction:column; padding-top:60px; text-align:center; }
+    .hero h1 { font-size:38px; }
+    .hero p { margin-left:auto; margin-right:auto; }
+    .btn-row { justify-content:center; }
+    .hero-visual { width:100%; height:380px; margin-top:20px; }
+  }
+
+  /* SECTION HEAD */
+  .section-head { max-width:600px; margin:0 auto 56px auto; text-align:center; }
+  .section-head .pill { margin-bottom:20px; }
+  .section-head h2 { font-size:36px; font-weight:800; letter-spacing:-0.5px; }
+  .section-head p { color:var(--muted); margin-top:14px; font-size:16px; }
+
+  section { padding:110px 6%; position:relative; }
+
+  /* SERVICES - bento grid */
+  .bento {
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    grid-auto-rows:210px;
+    gap:20px;
+    max-width:1080px;
+    margin:0 auto;
+    grid-template-areas:
+      "a a b b"
+      "a a c d"
+      "e e f f";
+  }
+  .bento-card {
+    border-radius:22px;
+    border:1px solid var(--border);
+    background:var(--card);
+    padding:22px 24px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    transition:transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .bento-card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,0.22); background:rgba(255,255,255,0.065); }
+  .bento-card .icon { font-size:26px; margin-bottom:10px; }
+  .bento-card h3 { font-size:16.5px; font-weight:700; margin-bottom:6px; }
+  .bento-card p { font-size:13.3px; color:var(--muted); line-height:1.5; }
+  .bento-card.featured { grid-area:a; }
+  .bento-card.featured .icon { font-size:42px; }
+  .bento-card.featured h3 { font-size:23px; }
+  .bento-card.featured p { font-size:14.5px; }
+  .bento-card.featured::before {
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(160deg, rgba(255,138,43,0.14), transparent 60%);
+  }
+  .b { grid-area:b; } .c { grid-area:c; } .d { grid-area:d; } .e { grid-area:e; } .f { grid-area:f; }
+
+  @media (max-width:800px){
+    .bento { grid-template-columns:1fr; grid-auto-rows:auto; grid-template-areas:"a" "b" "c" "d" "e" "f"; }
+    .bento-card { min-height:140px; }
+  }
+
+  /* GALLERY */
+  .gallery-grid {
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:20px;
+    max-width:1080px;
+    margin:0 auto;
+  }
+  .photo-slot {
+    aspect-ratio:1/1;
+    border-radius:20px;
+    border:1.5px dashed var(--border);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    color:var(--muted);
+    background:linear-gradient(150deg, rgba(255,138,43,0.06), rgba(45,212,191,0.05));
+    transition:transform 0.25s ease, border-color 0.25s ease;
+  }
+  .photo-slot:hover { transform:scale(1.03); border-color:rgba(255,255,255,0.3); }
+  .photo-slot .picon { font-size:28px; }
+  .photo-slot span { font-size:12.5px; font-weight:500; }
+  @media (max-width:800px){ .gallery-grid { grid-template-columns:1fr 1fr; } }
+
+  /* WHY US */
+  .why-row {
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:24px;
+    max-width:1000px;
+    margin:0 auto;
+  }
+  .why-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:32px 28px;
+  }
+  .why-card .num {
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:34px;
+    background:var(--grad);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin-bottom:14px;
+  }
+  .why-card h3 { font-size:18px; margin-bottom:10px; }
+  .why-card p { font-size:14.5px; color:var(--muted); line-height:1.6; }
+  @media (max-width:800px){ .why-row { grid-template-columns:1fr; } }
+
+  /* CONTACT */
+  .contact-wrap {
+    max-width:900px;
+    margin:0 auto;
+    text-align:center;
+    position:relative;
+  }
+  .contact-wrap::before {
+    content:"";
+    position:absolute;
+    top:-80px; left:50%;
+    transform:translateX(-50%);
+    width:500px; height:300px;
+    background:radial-gradient(ellipse, rgba(255,138,43,0.18), transparent 70%);
+    z-index:0;
+  }
+  .contact-wrap h2 { font-size:38px; font-weight:800; position:relative; z-index:1; margin-bottom:16px; }
+  .contact-wrap > p { color:var(--muted); position:relative; z-index:1; margin-bottom:40px; font-size:16px; }
+  .contact-cards {
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+    position:relative;
+    z-index:1;
+  }
+  .contact-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:26px 30px;
+    min-width:250px;
+    text-align:left;
+    transition:border-color 0.25s ease, transform 0.25s ease;
+  }
+  .contact-card:hover { border-color:rgba(255,255,255,0.25); transform:translateY(-3px); }
+  .contact-card .clabel {
+    font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--teal); font-weight:700; margin-bottom:8px; display:block;
+  }
+  .contact-card .cvalue { font-size:19px; font-weight:600; line-height:1.4; }
+  .contact-card.wa .clabel { color:var(--amber2); }
+
+  footer {
+    text-align:center;
+    padding:26px 6%;
+    color:var(--muted);
+    font-size:13px;
+    border-top:1px solid var(--border);
+  }
+
+  /* SERVICE PHOTO MODAL */
+  .modal-overlay {
+    position:fixed;
+    inset:0;
+    background:rgba(6,8,16,0.75);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:200;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease;
+  }
+  .modal-overlay.active { opacity:1; pointer-events:auto; }
+  .modal-box {
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:24px;
+    max-width:560px;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    padding:34px;
+    position:relative;
+    transform:translateY(16px);
+    transition:transform 0.25s ease;
+  }
+  .modal-overlay.active .modal-box { transform:translateY(0); }
+  .modal-close {
+    position:absolute;
+    top:20px; right:20px;
+    width:34px; height:34px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-size:16px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover { background:rgba(255,255,255,0.14); }
+  .modal-icon { font-size:36px; margin-bottom:14px; }
+  .modal-box h3 { font-size:24px; font-weight:800; margin-bottom:10px; }
+  .modal-box .modal-desc { color:var(--muted); font-size:15px; line-height:1.6; margin-bottom:26px; }
+  .modal-photo-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .modal-photo-grid .photo-slot { aspect-ratio:1/1; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <div class="logo-text">Agam Construction</div>
+  </div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="https://wa.me/919805165932" class="nav-cta">WhatsApp</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-text reveal">
+    <h1>Building your <span class="grad-text">dream home</span>, from blueprint to finish</h1>
+    <p>Home construction, 2D/3D AutoCAD design, interior-exterior work, renovation and elevation — one team, start to finish.</p>
+    <div class="btn-row">
+      <a href="https://wa.me/919805165932" class="btn-primary">💬 Chat on WhatsApp</a>
+      <a href="#services" class="btn-ghost">View Services</a>
+    </div>
+  </div>
+  <div class="hero-visual reveal">
+    <div class="orb"></div>
+    <div class="center-card">🏗️</div>
+    <button class="badge b1" onclick="openGallery('construction')">🏠 Construction</button>
+    <button class="badge b2" onclick="openGallery('autocad')">📐 AutoCAD Design</button>
+    <button class="badge b3" onclick="openGallery('interior')">🛋️ Interior</button>
+    <button class="badge b4" onclick="openGallery('renovation')">🔨 Renovation</button>
+    <button class="badge b5" onclick="openGallery('elevation')">🏛️ Elevation</button>
+  </div>
+</section>
+
+<section id="services">
+  <div class="section-head reveal">
+    <div class="pill"><span class="dot"></span> What We Do</div>
+    <h2>All your construction needs, one place</h2>
+    <p>From the first sketch to the last coat of paint.</p>
+  </div>
+  <div class="bento reveal">
+    <div class="bento-card featured">
+      <div class="icon">🏠</div>
+      <h3>Home Construction</h3>
+      <p>Complete residential construction managed from the ground up — foundation, structure, masonry and finishing — so you don't have to coordinate separate contractors for each stage.</p>
+    </div>
+    <div class="bento-card b">
+      <div class="icon">📐</div>
+      <h3>2D/3D AutoCAD Design</h3>
+      <p>Detailed blueprints, floor plans and realistic 3D views prepared before construction starts, so you can see exactly how your home will look and make changes early.</p>
+    </div>
+    <div class="bento-card c">
+      <div class="icon">🛋️</div>
+      <h3>Interior Design</h3>
+      <p>Room-by-room space planning, layout and finishing so every part of your home is both practical to use and pleasant to live in.</p>
+    </div>
+    <div class="bento-card d">
+      <div class="icon">🌿</div>
+      <h3>Exterior Design</h3>
+      <p>Facade planning and exterior finishing that suits your home's surroundings and gives it a strong, lasting first impression.</p>
+    </div>
+    <div class="bento-card e">
+      <div class="icon">🔨</div>
+      <h3>Renovation</h3>
+      <p>Repairs and upgrades for existing homes — from small fixes to full renovations — carried out with minimal disruption to your daily life.</p>
+    </div>
+    <div class="bento-card f">
+      <div class="icon">🏛️</div>
+      <h3>Elevation Design</h3>
+      <p>Custom front and side elevation designs that reflect your taste and give your home a distinct, memorable character from the outside.</p>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="section-head reveal">
+    <div class="pill"><span class="dot"></span> Our Work</div>
+    <h2>Project Gallery</h2>
+    <p>Photos of completed and ongoing projects.</p>
+  </div>
+  <div class="gallery-grid reveal" id="live-gallery">
+    <div class="photo-slot"><div class="picon">🖼️</div><span>Loading...</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head reveal">
+    <div class="pill"><span class="dot"></span> Why Us</div>
+    <h2>Design & build, together</h2>
+  </div>
+  <div class="why-row reveal">
+    <div class="why-card">
+      <div class="num">01</div>
+      <h3>One Team, Start to Finish</h3>
+      <p>Design, blueprints and construction handled by the same team — nothing gets lost between drawing and building.</p>
+    </div>
+    <div class="why-card">
+      <div class="num">02</div>
+      <h3>Direct Contact</h3>
+      <p>You speak directly with us on WhatsApp. No middlemen, no delays.</p>
+    </div>
+    <div class="why-card">
+      <div class="num">03</div>
+      <h3>Local to Mandi District</h3>
+      <p>Based in Takoli, familiar with local terrain and building needs.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-wrap reveal">
+    <h2>Let's build something</h2>
+    <p>Reach out for a free discussion about your project.</p>
+    <div class="contact-cards">
+      <div class="contact-card wa">
+        <span class="clabel">WhatsApp Only</span>
+        <div class="cvalue">📱 9805165932</div>
+      </div>
+      <div class="contact-card">
+        <span class="clabel">Address</span>
+        <div class="cvalue">📍 Village Takoli, Post Office Panasra,<br>Tehsil Aut, District Mandi, H.P.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 Agam Construction. All rights reserved.</footer>
+
+<div class="modal-overlay" id="galleryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeGallery()">✕</button>
+    <div class="modal-icon" id="modalIcon">🏠</div>
+    <h3 id="modalTitle">Construction</h3>
+    <p class="modal-desc" id="modalDesc"></p>
+    <div class="modal-photo-grid" id="modalPhotoGrid"></div>
+  </div>
+</div>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const serviceData = {
+    construction: { icon:'🏠', title:'Home Construction', desc:'Full residential construction from foundation to finishing. Photos of completed and ongoing construction projects will go here.' },
+    autocad: { icon:'📐', title:'2D/3D AutoCAD Design', desc:'Detailed blueprints, floor plans and 3D views prepared before construction begins. Sample drawings and layouts will go here.' },
+    interior: { icon:'🛋️', title:'Interior Design', desc:'Space planning and interior finishing for every room in the house. Interior project photos will go here.' },
+    renovation: { icon:'🔨', title:'Renovation', desc:'Upgrades and repairs for existing homes, big or small. Before/after renovation photos will go here.' },
+    elevation: { icon:'🏛️', title:'Elevation Design', desc:'Front and side elevation designs that give a home its character. Elevation design photos will go here.' }
+  };
+
+  async function openGallery(key) {
+    const data = serviceData[key];
+    document.getElementById('modalIcon').textContent = data.icon;
+    document.getElementById('modalTitle').textContent = data.title;
+    document.getElementById('modalDesc').textContent = data.desc;
+    const grid = document.getElementById('modalPhotoGrid');
+    grid.innerHTML = '<p style="color:var(--muted);grid-column:1/-1;">Loading...</p>';
+    document.getElementById('galleryModal').classList.add('active');
+
+    try {
+      const res = await fetch('/api/photos?category=' + key);
+      const result = await res.json();
+      if (result.photos && result.photos.length) {
+        grid.innerHTML = result.photos.map(url =>
+          `<div class="photo-slot" style="padding:0;overflow:hidden;"><img src="${url}" style="width:100%;height:100%;object-fit:cover;"></div>`
+        ).join('');
+      } else {
+        grid.innerHTML = '<div class="photo-slot"><div class="picon">🖼️</div><span>Photos coming soon</span></div><div class="photo-slot"><div class="picon">🖼️</div><span>Photos coming soon</span></div>';
+      }
+    } catch (e) {
+      grid.innerHTML = '<p style="color:var(--muted);">Photos load nahi ho payi.</p>';
+    }
+  }
+
+  function closeGallery() {
+    document.getElementById('galleryModal').classList.remove('active');
+  }
+
+  document.getElementById('galleryModal').addEventListener('click', (e) => {
+    if (e.target.id === 'galleryModal') closeGallery();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeGallery();
+  });
+
+  fetch('/api/photos').then(r => r.json()).then(data => {
+    const grid = document.getElementById('live-gallery');
+    if (!data.photos || !data.photos.length) {
+      grid.innerHTML = '<div class="photo-slot"><div class="picon">🖼️</div><span>Photos coming soon</span></div>'.repeat(4);
+      return;
+    }
+    grid.innerHTML = data.photos.map(url =>
+      `<div class="photo-slot" style="padding:0;overflow:hidden;"><img src="${url}" style="width:100%;height:100%;object-fit:cover;"></div>`
+    ).join('');
+  }).catch(() => {});
+</script>
+
+</body>
+</html>

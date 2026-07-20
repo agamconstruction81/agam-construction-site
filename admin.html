@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agam Construction — Photo Admin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg:#0A0E1A; --bg-soft:#111629; --text:#F5F6FA; --muted:#9AA5B8;
+    --amber:#FF8A2B; --amber2:#FFC24B; --card:rgba(255,255,255,0.045); --border:rgba(255,255,255,0.09);
+    --grad: linear-gradient(135deg, var(--amber), var(--amber2));
+  }
+  body { font-family:'Inter', sans-serif; background:var(--bg); color:var(--text); padding:40px 20px; }
+  h1 { font-family:'Sora', sans-serif; font-size:24px; margin-bottom:6px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:30px; }
+  .box {
+    max-width:520px; margin:0 auto 30px auto;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:18px; padding:28px;
+  }
+  label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; margin-top:16px; }
+  label:first-of-type { margin-top:0; }
+  input[type="password"], select, input[type="file"] {
+    width:100%; padding:12px 14px; border-radius:10px;
+    border:1px solid var(--border); background:rgba(255,255,255,0.04);
+    color:var(--text); font-size:14px; font-family:inherit;
+  }
+  select option { background:#111629; }
+  button.upload-btn {
+    margin-top:20px; width:100%; padding:14px;
+    background:var(--grad); color:#0A0E1A; font-weight:700;
+    border:none; border-radius:10px; font-size:15px; cursor:pointer;
+  }
+  button.upload-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  #status { margin-top:14px; font-size:13.5px; color:var(--muted); min-height:18px; }
+  .manage-head { max-width:520px; margin:0 auto 14px auto; font-size:14px; color:var(--muted); }
+  #manage-grid {
+    max-width:520px; margin:0 auto; display:grid;
+    grid-template-columns:repeat(3, 1fr); gap:10px;
+  }
+  .thumb { position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1/1; border:1px solid var(--border); }
+  .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .thumb button {
+    position:absolute; bottom:5px; right:5px;
+    background:rgba(220,50,50,0.85); color:#fff; border:none;
+    font-size:11px; padding:4px 8px; border-radius:6px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>📸 Agam Construction — Photo Admin</h1>
+<div class="sub">Upload photos to your website gallery. Visitors can only view — only you can upload or delete from here.</div>
+
+<div class="box">
+  <label>Admin Password</label>
+  <input type="password" id="password" placeholder="Enter your password">
+
+  <label>Category</label>
+  <select id="category">
+    <option value="general">General (Homepage Gallery)</option>
+    <option value="construction">Home Construction</option>
+    <option value="autocad">2D/3D AutoCAD Design</option>
+    <option value="interior">Interior Design</option>
+    <option value="exterior">Exterior Design</option>
+    <option value="renovation">Renovation</option>
+    <option value="elevation">Elevation Design</option>
+  </select>
+
+  <label>Choose Photo(s)</label>
+  <input type="file" id="fileInput" accept="image/*" multiple>
+
+  <button class="upload-btn" onclick="doUpload()">Upload</button>
+  <div id="status"></div>
+</div>
+
+<div class="manage-head">Existing photos in this category (tap Delete to remove):</div>
+<div id="manage-grid">Loading...</div>
+
+<script type="module">
+  import { upload } from 'https://esm.sh/@vercel/blob/client@0.27.1';
+
+  window.doUpload = async function () {
+    const password = document.getElementById('password').value.trim();
+    const category = document.getElementById('category').value;
+    const files = document.getElementById('fileInput').files;
+    const status = document.getElementById('status');
+
+    if (!password) { status.textContent = 'Password daaliye.'; return; }
+    if (!files.length) { status.textContent = 'Kam se kam ek photo select kariye.'; return; }
+
+    status.textContent = 'Uploading...';
+    let uploaded = 0;
+
+    for (const file of files) {
+      try {
+        await upload(`gallery/${category}/${Date.now()}-${file.name}`, file, {
+          access: 'public',
+          handleUploadUrl: '/api/upload-token',
+          clientPayload: JSON.stringify({ password }),
+        });
+        uploaded++;
+      } catch (e) {
+        status.textContent = 'Error: ' + (e.message || 'upload fail hua') + ' (password galat ho sakta hai)';
+        return;
+      }
+    }
+
+    status.textContent = `✅ ${uploaded} photo(s) upload ho gayi.`;
+    document.getElementById('fileInput').value = '';
+    loadGrid(category);
+  };
+
+  window.deletePhoto = async function (url) {
+    const password = document.getElementById('password').value.trim();
+    if (!password) { alert('Pehle password daaliye.'); return; }
+    if (!confirm('Ye photo delete karni hai?')) return;
+
+    const res = await fetch('/api/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, password }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadGrid(document.getElementById('category').value);
+    } else {
+      alert('Error: ' + (data.error || 'delete fail hua'));
+    }
+  };
+
+  window.loadGrid = async function (category) {
+    const grid = document.getElementById('manage-grid');
+    grid.textContent = 'Loading...';
+    try {
+      const res = await fetch('/api/photos?category=' + category);
+      const data = await res.json();
+      if (!data.photos || !data.photos.length) {
+        grid.innerHTML = '<p style="color:var(--muted);grid-column:1/-1;">Is category mein abhi koi photo nahi hai.</p>';
+        return;
+      }
+      grid.innerHTML = data.photos.map(url =>
+        `<div class="thumb"><img src="${url}"><button onclick="deletePhoto('${url}')">Delete</button></div>`
+      ).join('');
+    } catch (e) {
+      grid.innerHTML = '<p style="color:var(--muted);">Photos load nahi ho payi.</p>';
+    }
+  };
+
+  document.getElementById('category').addEventListener('change', (e) => loadGrid(e.target.value));
+  loadGrid('general');
+</script>
+
+</body>
+</html>
